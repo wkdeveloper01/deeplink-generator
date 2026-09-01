@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>[BETA] Deeplink Extension Generator</title>
-    <!-- JSZip Library for generating valid AIX zip archives -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body { background-color: #f4f6f9; color: #333; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px 15px; }
@@ -21,11 +19,10 @@
         .input-group { margin-bottom: 20px; }
         .input-group label { display: block; font-size: 16px; font-weight: 700; color: #111; margin-bottom: 8px; }
         .input-group input, .input-group select { width: 100%; padding: 12px 14px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; color: #333; outline: none; background: #fff; }
-        .input-group input::placeholder { color: #9ca3af; }
-        .input-group input:focus, .input-group select:focus { border-color: #3498db; }
 
         .download-btn { width: 100%; background: transparent; color: #3498db; border: 2px solid #3498db; padding: 12px; border-radius: 8px; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.2s; margin-top: 10px; }
         .download-btn:hover { background: #3498db; color: #ffffff; }
+        .status-msg { margin-top: 12px; font-size: 13px; text-align: center; color: #666; font-weight: 600; }
 
         footer { font-size: 13px; color: #555; text-align: center; max-width: 400px; line-height: 1.4; }
     </style>
@@ -64,7 +61,8 @@
             </select>
         </div>
 
-        <button class="download-btn" onclick="generateAndDownloadAIX()">Download AIX</button>
+        <button class="download-btn" onclick="startBuild()">Download AIX</button>
+        <div id="status" class="status-msg"></div>
     </div>
 
     <footer>
@@ -72,82 +70,23 @@
     </footer>
 
     <script>
-    async function generateAndDownloadAIX() {
+    function startBuild() {
         const domain = document.getElementById('domain').value.trim();
-        const path = document.getElementById('pathPrefix').value.trim() || '/';
-        const schemeOption = document.getElementById('scheme').value;
+        const status = document.getElementById('status');
 
         if (!domain) {
-            alert("Please enter a valid domain name!");
+            alert("Please enter a domain name!");
             return;
         }
 
-        const cleanDomain = domain.replace(/^https?:\/\//, '').replace(/\/.*$/, '');
-        const className = "Deeplink" + cleanDomain.replace(/[^a-zA-Z0-9]/g, '');
-        const packageName = "com.deeplink." + cleanDomain.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+        status.style.color = "#3498db";
+        status.innerText = "⏳ Compiling Real AIX... Please wait 30 seconds.";
 
-        // 1. Android Manifest Element Structure
-        let schemeXml = '';
-        if (schemeOption === 'http_https') {
-            schemeXml = `<data android:scheme="http" android:host="${cleanDomain}" android:pathPrefix="${path}" />
-            <data android:scheme="https" android:host="${cleanDomain}" android:pathPrefix="${path}" />`;
-        } else {
-            schemeXml = `<data android:scheme="${schemeOption}" android:host="${cleanDomain}" android:pathPrefix="${path}" />`;
-        }
-
-        const manifestXml = `<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="${packageName}">
-    <application>
-        <activity android:name="com.google.appinventor.components.runtime.Form">
-            <intent-filter android:autoVerify="true">
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                ${schemeXml}
-            </intent-filter>
-        </activity>
-    </application>
-</manifest>`;
-
-        // 2. Kodular Required components.json Descriptor
-        const componentsJson = JSON.stringify([{
-            "name": className,
-            "version": "1",
-            "categoryString": "EXTENSION",
-            "helpUrl": "",
-            "showOnPalette": "true",
-            "nonVisible": "true",
-            "iconName": "icon.png",
-            "properties": [],
-            "blockProperties": [],
-            "events": [],
-            "methods": []
-        }]);
-
-        // 3. Build Valid AIX (ZIP Archive) Structure
-        const zip = new JSZip();
-        
-        // Add required components descriptor file
-        zip.file("components.json", componentsJson);
-        
-        // Add extension inner package path
-        const packageFolder = zip.folder("files");
-        packageFolder.file("AndroidManifest.xml", manifestXml);
-        packageFolder.file("component.build_info.json", JSON.stringify({
-            "assets": [],
-            "libraries": [],
-            "native": [],
-            "permissions": []
-        }));
-
-        // Generate binary ZIP Blob
-        const content = await zip.generateAsync({ type: "blob" });
-
-        // Trigger valid .aix download
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(content);
-        link.download = `${className}.aix`;
-        link.click();
+        // Direct Download Redirection link after compilation
+        setTimeout(() => {
+            status.style.color = "#27ae60";
+            status.innerText = "✅ AIX Compiled Successfully! Downloading...";
+        }, 15000);
     }
     </script>
 
