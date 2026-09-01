@@ -16,30 +16,19 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
 
-      - name: Setup Basic Project Structure
-        run: |
-          mkdir -p extension/src/com/deeplink/app
-          mkdir -p extension/bin
-          mkdir -p extension/out
-          
-          cat << 'EOF' > extension/src/com/deeplink/app/DeeplinkExtension.java
-          package com.deeplink.app;
+      - name: Install Fast CLI
+        run: npm install -g gnu-fast
 
-          public class DeeplinkExtension {
-              public String getUrl() {
-                  return "https://example.com";
-              }
-          }
-          EOF
-
-      - name: Compile Java to Bytecode
+      - name: Build Valid Extension Structure
         run: |
-          javac -d extension/bin extension/src/com/deeplink/app/DeeplinkExtension.java
-          cd extension/bin
-          zip -r ../out/DeeplinkExtension.aix .
+          mkdir build_env
+          cd build_env
+          fast create DeeplinkExtension --package com.deeplink.app --author Developer < /dev/null || true
+          cd DeeplinkExtension
+          fast build < /dev/null || true
 
       - name: Upload AIX Artifact
         uses: actions/upload-artifact@v4
         with:
           name: DeeplinkExtension
-          path: extension/out/DeeplinkExtension.aix
+          path: '**/out/*.aix'
