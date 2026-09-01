@@ -3,124 +3,200 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Akshat Style Deep Link Generator</title>
+    <title>Kodular Extension Creator</title>
     <style>
         :root {
-            --primary: #ff2a2a;
-            --primary-hover: #d61b1b;
-            --bg: #0d0f12;
-            --card-bg: #161b22;
-            --border: #30363d;
-            --text: #f0f6fc;
-            --subtext: #8b949e;
+            --bg: #1e1e1e;
+            --sidebar: #252526;
+            --accent: #7052ff;
+            --accent-hover: #5a3ce1;
+            --border: #3c3c3c;
+            --text: #cccccc;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body { background: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; }
         
-        .container { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 32px; width: 100%; max-width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .header { text-align: center; margin-bottom: 24px; }
-        .header h1 { font-size: 24px; color: var(--text); margin-bottom: 8px; }
-        .header h1 span { color: var(--primary); }
-        .header p { color: var(--subtext); font-size: 14px; }
+        header { background: #333333; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+        header h1 { font-size: 18px; color: #fff; display: flex; align-items: center; gap: 8px; }
+        header h1 span { color: var(--accent); }
 
-        .input-group { margin-bottom: 20px; }
-        .input-group label { display: block; font-size: 13px; font-weight: 600; color: var(--subtext); margin-bottom: 8px; text-transform: uppercase; }
-        .input-group input { width: 100%; padding: 14px; background: #0d1117; border: 1px solid var(--border); border-radius: 8px; color: #fff; font-size: 15px; outline: none; transition: 0.2s; }
-        .input-group input:focus { border-color: var(--primary); box-shadow: 0 0 8px rgba(255,42,42,0.3); }
+        .main-container { display: flex; flex: 1; overflow: hidden; }
+        
+        .sidebar { width: 320px; background: var(--sidebar); border-right: 1px solid var(--border); padding: 20px; overflow-y: auto; }
+        .editor-section { flex: 1; display: flex; flex-direction: column; background: #1e1e1e; }
 
-        .btn { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 16px; cursor: pointer; transition: 0.2s; }
-        .btn:hover { background: var(--primary-hover); }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 12px; text-transform: uppercase; margin-bottom: 6px; color: #888; font-weight: 600; }
+        .form-group input, .form-group textarea { width: 100%; padding: 10px; background: #3c3c3c; border: 1px solid #555; border-radius: 4px; color: #fff; font-size: 14px; outline: none; }
+        .form-group input:focus { border-color: var(--accent); }
 
-        .result-box { margin-top: 24px; background: #0d1117; border: 1px dashed var(--primary); border-radius: 10px; padding: 16px; display: none; }
-        .result-title { font-size: 12px; color: var(--primary); font-weight: 700; text-transform: uppercase; margin-bottom: 6px; }
-        .result-url { font-family: monospace; font-size: 13px; color: #58a6ff; word-break: break-all; margin-bottom: 12px; background: #161b22; padding: 10px; border-radius: 6px; }
-        .action-btns { display: flex; gap: 10px; }
-        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); padding: 10px; border-radius: 6px; cursor: pointer; flex: 1; font-weight: 600; transition: 0.2s; }
-        .btn-outline:hover { background: var(--border); }
-        .btn-open { background: #238636; border: none; color: white; padding: 10px; border-radius: 6px; cursor: pointer; flex: 1; font-weight: 600; text-decoration: none; text-align: center; }
+        .btn { background: var(--accent); color: white; border: none; padding: 10px 16px; border-radius: 4px; font-weight: bold; cursor: pointer; transition: 0.2s; width: 100%; margin-top: 10px; }
+        .btn:hover { background: var(--accent-hover); }
+        .btn-secondary { background: #3a3d41; margin-top: 5px; }
+
+        .code-header { background: #2d2d2d; padding: 10px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        pre { flex: 1; padding: 20px; font-family: 'Consolas', 'Courier New', monospace; font-size: 14px; color: #9cdcfe; overflow: auto; background: #1e1e1e; }
+
+        .block-card { background: #2d2d2d; border: 1px solid var(--border); padding: 12px; border-radius: 6px; margin-bottom: 10px; }
+        .block-card h4 { font-size: 13px; color: #4ec9b0; margin-bottom: 8px; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="header">
-        <h1><span>Smart</span> Deeplink Generator</h1>
-        <p>Open Social Media Links Directly Inside Native Apps</p>
-    </div>
+<header>
+    <h1><span>Kodular</span> Extension Builder</h1>
+    <button class="btn" style="width: auto; margin:0;" onclick="copyCode()">Copy Java Code</button>
+</header>
 
-    <div class="input-group">
-        <label>Enter Original URL</label>
-        <input type="url" id="targetUrl" placeholder="Paste YouTube, Instagram, or Telegram URL..." required>
-    </div>
-
-    <button class="btn" onclick="generateLink()">Generate Smart Link</button>
-
-    <div class="result-box" id="resultBox">
-        <div class="result-title">Your Smart Deep Link</div>
-        <div class="result-url" id="generatedUrl"></div>
-        <div class="action-btns">
-            <button class="btn-outline" onclick="copyResult()">Copy Link</button>
-            <a href="#" target="_blank" id="testBtn" class="btn-open">Test Link</a>
+<div class="main-container">
+    <!-- Extension Configuration Sidebar -->
+    <div class="sidebar">
+        <h3 style="margin-bottom: 15px; color: #fff; font-size: 16px;">Metadata Config</h3>
+        
+        <div class="form-group">
+            <label>Package Name</label>
+            <input type="text" id="pkgName" value="com.akshat.myextension" oninput="generateJava()">
         </div>
+
+        <div class="form-group">
+            <label>Extension Class Name</label>
+            <input type="text" id="className" value="MyExtension" oninput="generateJava()">
+        </div>
+
+        <div class="form-group">
+            <label>Icon Asset Path (Optional)</label>
+            <input type="text" id="iconPath" value="icon.png" oninput="generateJava()">
+        </div>
+
+        <hr style="border-color: var(--border); margin: 20px 0;">
+
+        <h3 style="margin-bottom: 15px; color: #fff; font-size: 16px;">Blocks Manager</h3>
+        <div id="blocksContainer"></div>
+
+        <button class="btn btn-secondary" onclick="addFunctionBlock()">+ Add Function Block</button>
+        <button class="btn btn-secondary" onclick="addEventBlock()">+ Add Event Block</button>
+    </div>
+
+    <!-- Live Java Code Editor Output -->
+    <div class="editor-section">
+        <div class="code-header">
+            <span style="font-size: 13px; font-weight: 600;">Generated Source Code (.java)</span>
+        </div>
+        <pre id="javaOutput"></pre>
     </div>
 </div>
 
 <script>
-function generateLink() {
-    const input = document.getElementById('targetUrl').value.trim();
-    if(!input) { alert('Please enter a valid URL'); return; }
+let blocks = [
+    { type: 'function', name: 'MultiplyNumbers', returnType: 'int', paramName: 'number1' },
+    { type: 'event', name: 'OnSuccess', paramName: 'response' }
+];
 
-    const currentDomain = window.location.href.split('?')[0];
-    const encodedUrl = encodeURIComponent(input);
-    
-    // Redirect URL format generator
-    const finalDeepLink = `${currentDomain}?redirect=${encodedUrl}`;
-
-    document.getElementById('generatedUrl').innerText = finalDeepLink;
-    document.getElementById('testBtn').href = finalDeepLink;
-    document.getElementById('resultBox').style.display = 'block';
+function addFunctionBlock() {
+    blocks.push({ type: 'function', name: 'NewFunction' + (blocks.length + 1), returnType: 'String', paramName: 'text' });
+    renderBlockInputs();
+    generateJava();
 }
 
-function copyResult() {
-    const text = document.getElementById('generatedUrl').innerText;
-    navigator.clipboard.writeText(text);
-    alert('Deep Link Copied successfully!');
+function addEventBlock() {
+    blocks.push({ type: 'event', name: 'NewEvent' + (blocks.length + 1), paramName: 'status' });
+    renderBlockInputs();
+    generateJava();
 }
 
-// Auto Redirection Engine
-(function handleAutoRedirect() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const redirectTarget = urlParams.get('redirect');
+function removeBlock(index) {
+    blocks.splice(index, 1);
+    renderBlockInputs();
+    generateJava();
+}
 
-    if (redirectTarget) {
-        document.body.innerHTML = `
-            <div style="text-align:center; color:white;">
-                <h2>Opening App...</h2>
-                <p style="margin-top:10px; color:#8b949e;">Please wait while we redirect you.</p>
+function renderBlockInputs() {
+    const container = document.getElementById('blocksContainer');
+    container.innerHTML = '';
+
+    blocks.forEach((block, index) => {
+        const div = document.createElement('div');
+        div.className = 'block-card';
+        div.innerHTML = `
+            <h4>${block.type === 'function' ? '⚡ Function Block' : '🔔 Event Block'}</h4>
+            <div class="form-group">
+                <input type="text" value="${block.name}" placeholder="Block Name" onchange="updateBlock(${index}, 'name', this.value)">
             </div>
+            <div class="form-group">
+                <input type="text" value="${block.paramName}" placeholder="Parameter Name" onchange="updateBlock(${index}, 'paramName', this.value)">
+            </div>
+            <button onclick="removeBlock(${index})" style="background: #e51c23; color:#fff; border:none; padding:4px 8px; border-radius:3px; cursor:pointer; font-size:11px;">Delete Block</button>
         `;
-        
-        let appScheme = redirectTarget;
+        container.appendChild(div);
+    });
+}
 
-        if (redirectTarget.includes('youtube.com') || redirectTarget.includes('youtu.be')) {
-            const videoId = redirectTarget.split('v=')[1] || redirectTarget.split('/').pop();
-            const cleanId = videoId.split('&')[0];
-            appScheme = `intent://www.youtube.com/watch?v=${cleanId}#Intent;package=com.google.android.youtube;scheme=https;end`;
-        } else if (redirectTarget.includes('instagram.com')) {
-            appScheme = `instagram://user?username=${redirectTarget.split('instagram.com/')[1].split('/')[0]}`;
-        } else if (redirectTarget.includes('t.me')) {
-            appScheme = `tg://resolve?domain=${redirectTarget.split('t.me/')[1]}`;
+function updateBlock(index, key, value) {
+    blocks[index][key] = value;
+    generateJava();
+}
+
+function generateJava() {
+    const pkg = document.getElementById('pkgName').value.trim();
+    const cls = document.getElementById('className').value.trim();
+    const icon = document.getElementById('iconPath').value.trim();
+
+    let blocksCode = '';
+
+    blocks.forEach(b => {
+        if (b.type === 'function') {
+            blocksCode += `
+    @SimpleFunction(description = "Executes ${b.name}")
+    public ${b.returnType || 'void'} ${b.name}(${b.returnType === 'int' ? 'int' : 'String'} ${b.paramName}) {
+        // Custom Logic Here
+        return ${b.returnType === 'int' ? '0' : '""'};
+    }\n`;
+        } else if (b.type === 'event') {
+            blocksCode += `
+    @SimpleEvent(description = "Triggers ${b.name}")
+    public void ${b.name}(String ${b.paramName}) {
+        EventDispatcher.dispatchEvent(this, "${b.name}", ${b.paramName});
+    }\n`;
         }
+    });
 
-        window.location.href = appScheme;
+    const javaTemplate = `package ${pkg};
 
-        // Fallback to normal URL after 2.5 seconds if app doesn't open
-        setTimeout(() => {
-            window.location.href = redirectTarget;
-        }, 2500);
+import com.google.appinventor.components.annotations.*;
+import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.runtime.*;
+import com.google.appinventor.components.runtime.util.*;
+
+@DesignerComponent(
+    version = 1,
+    description = "Generated via Kodular Builder",
+    category = ComponentCategory.EXTENSION,
+    nonVisible = true,
+    iconName = "${icon}"
+)
+@SimpleObject(external = true)
+public class ${cls} extends AndroidNonvisibleComponent {
+
+    public ${cls}(ComponentContainer container) {
+        super(container.$form());
     }
-})();
+
+${blocksCode}
+}`;
+
+    document.getElementById('javaOutput').innerText = javaTemplate;
+}
+
+function copyCode() {
+    const code = document.getElementById('javaOutput').innerText;
+    navigator.clipboard.writeText(code);
+    alert('Java extension code copied!');
+}
+
+// Initial setup
+renderBlockInputs();
+generateJava();
 </script>
 
 </body>
