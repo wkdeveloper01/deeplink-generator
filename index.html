@@ -4,87 +4,74 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Deep Link Generator</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
-        .card { background: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); width: 100%; max-width: 480px; text-align: center; }
-        h2 { color: #1a73e8; margin-bottom: 10px; font-size: 24px; }
-        p { color: #666; font-size: 14px; margin-bottom: 20px; }
-        input { width: 100%; padding: 14px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; outline: none; transition: 0.3s; margin-bottom: 15px; }
-        input:focus { border-color: #1a73e8; }
-        button { width: 100%; padding: 14px; background: #1a73e8; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        button:hover { background: #1557b0; }
-        .output { margin-top: 25px; padding: 15px; background: #e8f0fe; border-radius: 8px; text-align: left; display: none; word-break: break-all; }
-        .output label { font-size: 12px; color: #1a73e8; font-weight: bold; text-transform: uppercase; display: block; margin-bottom: 5px; }
-        .output p { color: #333; font-size: 14px; margin-bottom: 10px; font-family: monospace; }
-        .copy-btn { background: #34a853; padding: 8px 12px; font-size: 13px; width: auto; }
-        .copy-btn:hover { background: #2d8e47; }
-    </style>
 </head>
-<body>
+<body style="background-color: #1a0000; font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 15px; box-sizing: border-box;">
 
-<div class="card">
-    <h2>Deeplink Generator</h2>
-    <p>Apna Social Media URL paste karke Direct App Opening Link banayein.</p>
-    
-    <input type="url" id="userUrl" placeholder="https://youtube.com/watch?v=... ya Instagram link" required>
-    <button onclick="generateDeepLink()">Generate Link</button>
+    <div style="background-color: #2b0000; padding: 30px; border-radius: 12px; box-shadow: 0 8px 25px rgba(255, 0, 0, 0.2); border: 2px solid #ff1a1a; width: 100%; max-width: 450px; text-align: center;">
+        
+        <h2 style="color: #ff3333; margin-top: 0; margin-bottom: 10px; font-size: 26px; text-transform: uppercase; letter-spacing: 1px;">Deeplink Generator</h2>
+        
+        <p style="color: #ffcccc; font-size: 14px; margin-bottom: 25px;">Apna Social Media URL daalein aur Direct App Link banayein.</p>
+        
+        <input type="url" id="userUrl" placeholder="Paste link (YouTube, Instagram, etc.)" style="width: 100%; padding: 14px; border: 2px solid #ff3333; border-radius: 8px; font-size: 15px; background-color: #000000; color: #ffffff; outline: none; margin-bottom: 20px; box-sizing: border-box;">
+        
+        <button onclick="generateDeepLink()" style="width: 100%; padding: 14px; background-color: #e60000; color: #ffffff; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;">Generate Link</button>
 
-    <div class="output" id="outputContainer">
-        <label>Aapka Deep Link:</label>
-        <p id="resultUrl"></p>
-        <button class="copy-btn" onclick="copyLink()">Link Copy Karein</button>
+        <div id="outputContainer" style="margin-top: 25px; padding: 15px; background-color: #110000; border: 1px dashed #ff3333; border-radius: 8px; text-align: left; display: none; word-break: break-all;">
+            <label style="font-size: 12px; color: #ff6666; font-weight: bold; text-transform: uppercase; display: block; margin-bottom: 8px;">Aapka Deep Link:</label>
+            <p id="resultUrl" style="color: #ffffff; font-size: 14px; margin-bottom: 15px; font-family: monospace; background: #000; padding: 10px; border-radius: 5px; border: 1px solid #440000;"></p>
+            <button onclick="copyLink()" style="background-color: #ff1a1a; color: white; border: none; padding: 10px 15px; font-size: 13px; font-weight: bold; border-radius: 5px; cursor: pointer; width: 100%;">Link Copy Karein</button>
+        </div>
+
     </div>
-</div>
 
-<script>
-function generateDeepLink() {
-    let inputUrl = document.getElementById('userUrl').value.trim();
-    let resultElement = document.getElementById('resultUrl');
-    let outputContainer = document.getElementById('outputContainer');
-    let generatedLink = '';
+    <script>
+    function generateDeepLink() {
+        let inputUrl = document.getElementById('userUrl').value.trim();
+        let resultElement = document.getElementById('resultUrl');
+        let outputContainer = document.getElementById('outputContainer');
+        let generatedLink = '';
 
-    if (!inputUrl) {
-        alert("Kripya ek valid URL enter karein!");
-        return;
-    }
-
-    // YouTube Deep Link Scheme (Android Intent)
-    if (inputUrl.includes('youtube.com') || inputUrl.includes('youtu.be')) {
-        let videoId = inputUrl.split('v=')[1] || inputUrl.split('/').pop();
-        videoId = videoId.split('&')[0];
-        generatedLink = `intent://www.youtube.com/watch?v=${videoId}#Intent;package=com.google.android.youtube;scheme=https;end`;
-    } 
-    // Instagram Deep Link Scheme
-    else if (inputUrl.includes('instagram.com')) {
-        let path = inputUrl.split('instagram.com/')[1];
-        if (path.startsWith('p/') || path.startsWith('reel/')) {
-            generatedLink = `instagram://media?id=${path}`;
-        } else {
-            let username = path.split('/')[0].split('?')[0];
-            generatedLink = `instagram://user?username=${username}`;
+        if (!inputUrl) {
+            alert("Kripya ek valid URL enter karein!");
+            return;
         }
-    } 
-    // Telegram Deep Link Scheme
-    else if (inputUrl.includes('t.me')) {
-        let username = inputUrl.split('t.me/')[1];
-        generatedLink = `tg://resolve?domain=${username}`;
-    }
-    // Generic Fallback
-    else {
-        generatedLink = inputUrl;
+
+        // YouTube Intent Scheme
+        if (inputUrl.includes('youtube.com') || inputUrl.includes('youtu.be')) {
+            let videoId = inputUrl.split('v=')[1] || inputUrl.split('/').pop();
+            videoId = videoId.split('&')[0];
+            generatedLink = `intent://www.youtube.com/watch?v=${videoId}#Intent;package=com.google.android.youtube;scheme=https;end`;
+        } 
+        // Instagram Intent Scheme
+        else if (inputUrl.includes('instagram.com')) {
+            let path = inputUrl.split('instagram.com/')[1];
+            if (path && (path.startsWith('p/') || path.startsWith('reel/'))) {
+                generatedLink = `instagram://media?id=${path}`;
+            } else if (path) {
+                let username = path.split('/')[0].split('?')[0];
+                generatedLink = `instagram://user?username=${username}`;
+            }
+        } 
+        // Telegram Intent Scheme
+        else if (inputUrl.includes('t.me')) {
+            let username = inputUrl.split('t.me/')[1];
+            generatedLink = `tg://resolve?domain=${username}`;
+        }
+        else {
+            generatedLink = inputUrl;
+        }
+
+        resultElement.innerText = generatedLink;
+        outputContainer.style.display = 'block';
     }
 
-    resultElement.innerText = generatedLink;
-    outputContainer.style.display = 'block';
-}
-
-function copyLink() {
-    let textToCopy = document.getElementById('resultUrl').innerText;
-    navigator.clipboard.writeText(textToCopy);
-    alert("Deep Link Copy ho gaya hai!");
-}
-</script>
+    function copyLink() {
+        let textToCopy = document.getElementById('resultUrl').innerText;
+        navigator.clipboard.writeText(textToCopy);
+        alert("Red Deep Link copy ho gaya!");
+    }
+    </script>
 
 </body>
 </html>
