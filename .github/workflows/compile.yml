@@ -16,14 +16,16 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
 
-      - name: Install Fast CLI
-        run: npm install -g gnu-fast
+      - name: Install Rush CLI
+        run: npm install -g rush-cli
 
-      - name: Create and Build
+      - name: Create Rush Project
+        run: rush create deeplink --org com.deeplink --author Developer
+
+      - name: Build Extension
         run: |
-          fast create deeplink --package com.deeplink.app
           cd deeplink
-          fast build
+          rush build
 
       - name: Upload AIX Artifact
         uses: actions/upload-artifact@v4
