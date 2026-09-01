@@ -1,0 +1,26 @@
+name: Build AIX Extension
+
+on:
+  repository_dispatch:
+    types: [build-aix]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Java JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+
+      - name: Install Rush Compiler
+        run: |
+          npm install -g rush-cli
+
+      - name: Build Extension
+        run: |
+          rush build
