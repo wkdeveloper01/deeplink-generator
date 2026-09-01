@@ -1,77 +1,127 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deep Link Generator</title>
+    <title>Akshat Style Deep Link Generator</title>
+    <style>
+        :root {
+            --primary: #ff2a2a;
+            --primary-hover: #d61b1b;
+            --bg: #0d0f12;
+            --card-bg: #161b22;
+            --border: #30363d;
+            --text: #f0f6fc;
+            --subtext: #8b949e;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        
+        .container { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 32px; width: 100%; max-width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .header { text-align: center; margin-bottom: 24px; }
+        .header h1 { font-size: 24px; color: var(--text); margin-bottom: 8px; }
+        .header h1 span { color: var(--primary); }
+        .header p { color: var(--subtext); font-size: 14px; }
+
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; font-size: 13px; font-weight: 600; color: var(--subtext); margin-bottom: 8px; text-transform: uppercase; }
+        .input-group input { width: 100%; padding: 14px; background: #0d1117; border: 1px solid var(--border); border-radius: 8px; color: #fff; font-size: 15px; outline: none; transition: 0.2s; }
+        .input-group input:focus { border-color: var(--primary); box-shadow: 0 0 8px rgba(255,42,42,0.3); }
+
+        .btn { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 16px; cursor: pointer; transition: 0.2s; }
+        .btn:hover { background: var(--primary-hover); }
+
+        .result-box { margin-top: 24px; background: #0d1117; border: 1px dashed var(--primary); border-radius: 10px; padding: 16px; display: none; }
+        .result-title { font-size: 12px; color: var(--primary); font-weight: 700; text-transform: uppercase; margin-bottom: 6px; }
+        .result-url { font-family: monospace; font-size: 13px; color: #58a6ff; word-break: break-all; margin-bottom: 12px; background: #161b22; padding: 10px; border-radius: 6px; }
+        .action-btns { display: flex; gap: 10px; }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); padding: 10px; border-radius: 6px; cursor: pointer; flex: 1; font-weight: 600; transition: 0.2s; }
+        .btn-outline:hover { background: var(--border); }
+        .btn-open { background: #238636; border: none; color: white; padding: 10px; border-radius: 6px; cursor: pointer; flex: 1; font-weight: 600; text-decoration: none; text-align: center; }
+    </style>
 </head>
-<body style="background-color: #1a0000; font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 15px; box-sizing: border-box;">
+<body>
 
-    <div style="background-color: #2b0000; padding: 30px; border-radius: 12px; box-shadow: 0 8px 25px rgba(255, 0, 0, 0.2); border: 2px solid #ff1a1a; width: 100%; max-width: 450px; text-align: center;">
-        
-        <h2 style="color: #ff3333; margin-top: 0; margin-bottom: 10px; font-size: 26px; text-transform: uppercase; letter-spacing: 1px;">Deeplink Generator</h2>
-        
-        <p style="color: #ffcccc; font-size: 14px; margin-bottom: 25px;">Apna Social Media URL daalein aur Direct App Link banayein.</p>
-        
-        <input type="url" id="userUrl" placeholder="Paste link (YouTube, Instagram, etc.)" style="width: 100%; padding: 14px; border: 2px solid #ff3333; border-radius: 8px; font-size: 15px; background-color: #000000; color: #ffffff; outline: none; margin-bottom: 20px; box-sizing: border-box;">
-        
-        <button onclick="generateDeepLink()" style="width: 100%; padding: 14px; background-color: #e60000; color: #ffffff; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;">Generate Link</button>
-
-        <div id="outputContainer" style="margin-top: 25px; padding: 15px; background-color: #110000; border: 1px dashed #ff3333; border-radius: 8px; text-align: left; display: none; word-break: break-all;">
-            <label style="font-size: 12px; color: #ff6666; font-weight: bold; text-transform: uppercase; display: block; margin-bottom: 8px;">Aapka Deep Link:</label>
-            <p id="resultUrl" style="color: #ffffff; font-size: 14px; margin-bottom: 15px; font-family: monospace; background: #000; padding: 10px; border-radius: 5px; border: 1px solid #440000;"></p>
-            <button onclick="copyLink()" style="background-color: #ff1a1a; color: white; border: none; padding: 10px 15px; font-size: 13px; font-weight: bold; border-radius: 5px; cursor: pointer; width: 100%;">Link Copy Karein</button>
-        </div>
-
+<div class="container">
+    <div class="header">
+        <h1><span>Smart</span> Deeplink Generator</h1>
+        <p>Open Social Media Links Directly Inside Native Apps</p>
     </div>
 
-    <script>
-    function generateDeepLink() {
-        let inputUrl = document.getElementById('userUrl').value.trim();
-        let resultElement = document.getElementById('resultUrl');
-        let outputContainer = document.getElementById('outputContainer');
-        let generatedLink = '';
+    <div class="input-group">
+        <label>Enter Original URL</label>
+        <input type="url" id="targetUrl" placeholder="Paste YouTube, Instagram, or Telegram URL..." required>
+    </div>
 
-        if (!inputUrl) {
-            alert("Kripya ek valid URL enter karein!");
-            return;
+    <button class="btn" onclick="generateLink()">Generate Smart Link</button>
+
+    <div class="result-box" id="resultBox">
+        <div class="result-title">Your Smart Deep Link</div>
+        <div class="result-url" id="generatedUrl"></div>
+        <div class="action-btns">
+            <button class="btn-outline" onclick="copyResult()">Copy Link</button>
+            <a href="#" target="_blank" id="testBtn" class="btn-open">Test Link</a>
+        </div>
+    </div>
+</div>
+
+<script>
+function generateLink() {
+    const input = document.getElementById('targetUrl').value.trim();
+    if(!input) { alert('Please enter a valid URL'); return; }
+
+    const currentDomain = window.location.href.split('?')[0];
+    const encodedUrl = encodeURIComponent(input);
+    
+    // Redirect URL format generator
+    const finalDeepLink = `${currentDomain}?redirect=${encodedUrl}`;
+
+    document.getElementById('generatedUrl').innerText = finalDeepLink;
+    document.getElementById('testBtn').href = finalDeepLink;
+    document.getElementById('resultBox').style.display = 'block';
+}
+
+function copyResult() {
+    const text = document.getElementById('generatedUrl').innerText;
+    navigator.clipboard.writeText(text);
+    alert('Deep Link Copied successfully!');
+}
+
+// Auto Redirection Engine
+(function handleAutoRedirect() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const redirectTarget = urlParams.get('redirect');
+
+    if (redirectTarget) {
+        document.body.innerHTML = `
+            <div style="text-align:center; color:white;">
+                <h2>Opening App...</h2>
+                <p style="margin-top:10px; color:#8b949e;">Please wait while we redirect you.</p>
+            </div>
+        `;
+        
+        let appScheme = redirectTarget;
+
+        if (redirectTarget.includes('youtube.com') || redirectTarget.includes('youtu.be')) {
+            const videoId = redirectTarget.split('v=')[1] || redirectTarget.split('/').pop();
+            const cleanId = videoId.split('&')[0];
+            appScheme = `intent://www.youtube.com/watch?v=${cleanId}#Intent;package=com.google.android.youtube;scheme=https;end`;
+        } else if (redirectTarget.includes('instagram.com')) {
+            appScheme = `instagram://user?username=${redirectTarget.split('instagram.com/')[1].split('/')[0]}`;
+        } else if (redirectTarget.includes('t.me')) {
+            appScheme = `tg://resolve?domain=${redirectTarget.split('t.me/')[1]}`;
         }
 
-        // YouTube Intent Scheme
-        if (inputUrl.includes('youtube.com') || inputUrl.includes('youtu.be')) {
-            let videoId = inputUrl.split('v=')[1] || inputUrl.split('/').pop();
-            videoId = videoId.split('&')[0];
-            generatedLink = `intent://www.youtube.com/watch?v=${videoId}#Intent;package=com.google.android.youtube;scheme=https;end`;
-        } 
-        // Instagram Intent Scheme
-        else if (inputUrl.includes('instagram.com')) {
-            let path = inputUrl.split('instagram.com/')[1];
-            if (path && (path.startsWith('p/') || path.startsWith('reel/'))) {
-                generatedLink = `instagram://media?id=${path}`;
-            } else if (path) {
-                let username = path.split('/')[0].split('?')[0];
-                generatedLink = `instagram://user?username=${username}`;
-            }
-        } 
-        // Telegram Intent Scheme
-        else if (inputUrl.includes('t.me')) {
-            let username = inputUrl.split('t.me/')[1];
-            generatedLink = `tg://resolve?domain=${username}`;
-        }
-        else {
-            generatedLink = inputUrl;
-        }
+        window.location.href = appScheme;
 
-        resultElement.innerText = generatedLink;
-        outputContainer.style.display = 'block';
+        // Fallback to normal URL after 2.5 seconds if app doesn't open
+        setTimeout(() => {
+            window.location.href = redirectTarget;
+        }, 2500);
     }
-
-    function copyLink() {
-        let textToCopy = document.getElementById('resultUrl').innerText;
-        navigator.clipboard.writeText(textToCopy);
-        alert("Red Deep Link copy ho gaya!");
-    }
-    </script>
+})();
+</script>
 
 </body>
 </html>
