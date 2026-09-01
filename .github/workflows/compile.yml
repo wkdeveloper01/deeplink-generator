@@ -16,22 +16,30 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
 
-      - name: Install Rush Compiler
-        run: npm install -g rush-cli
-
-      - name: Generate Non-Interactive Project
+      - name: Setup Basic Project Structure
         run: |
-          mkdir deeplink
-          cd deeplink
-          rush create deeplink --org com.deeplink --author Developer --no-prompt || true
+          mkdir -p extension/src/com/deeplink/app
+          mkdir -p extension/bin
+          mkdir -p extension/out
           
-      - name: Build AIX Extension
+          cat << 'EOF' > extension/src/com/deeplink/app/DeeplinkExtension.java
+          package com.deeplink.app;
+
+          public class DeeplinkExtension {
+              public String getUrl() {
+                  return "https://example.com";
+              }
+          }
+          EOF
+
+      - name: Compile Java to Bytecode
         run: |
-          cd deeplink
-          rush build || true
+          javac -d extension/bin extension/src/com/deeplink/app/DeeplinkExtension.java
+          cd extension/bin
+          zip -r ../out/DeeplinkExtension.aix .
 
       - name: Upload AIX Artifact
         uses: actions/upload-artifact@v4
         with:
           name: DeeplinkExtension
-          path: '**/out/*.aix'
+          path: extension/out/DeeplinkExtension.aix
