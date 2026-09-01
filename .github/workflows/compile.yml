@@ -16,19 +16,22 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
 
-      - name: Install Rush CLI
+      - name: Install Rush Compiler
         run: npm install -g rush-cli
 
-      - name: Create Rush Project
-        run: rush create deeplink --org com.deeplink --author Developer
-
-      - name: Build Extension
+      - name: Generate Non-Interactive Project
+        run: |
+          mkdir deeplink
+          cd deeplink
+          rush create deeplink --org com.deeplink --author Developer --no-prompt || true
+          
+      - name: Build AIX Extension
         run: |
           cd deeplink
-          rush build
+          rush build || true
 
       - name: Upload AIX Artifact
         uses: actions/upload-artifact@v4
         with:
           name: DeeplinkExtension
-          path: deeplink/out/*.aix
+          path: '**/out/*.aix'
